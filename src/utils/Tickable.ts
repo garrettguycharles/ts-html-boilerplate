@@ -1,4 +1,4 @@
-import {sleep, setImmediate} from "./utils";
+import {setImmediate, sleep} from "./utils";
 
 export abstract class Tickable {
     private scheduled_tick: NodeJS.Timeout | undefined;

@@ -1,19 +1,5 @@
-import {Tickable} from "./utils/Tickable";
-
 export class App {
-    // singleton pattern
-    private constructor() {
-    }
-
-    private static instance: App;
-
-    public static getInstance(): App {
-        if (!App.instance) {
-            App.instance = new App();
-        }
-
-        return App.instance;
-    }
+    // Manipulate your data here!
 }
 
-App.getInstance();
+const app = new App;
