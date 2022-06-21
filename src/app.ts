@@ -15,20 +15,10 @@ export class App {
 
     private counterClickerButton = new ClickerButton();
 
-    // singleton pattern
-    private constructor() {
+    // TODO: implement singleton pattern
+    constructor() {
         document.getElementById('content').appendChild(this.counterClickerButton.el);
-    }
-
-    private static instance: App;
-
-    public static getInstance(): App {
-        if (!App.instance) {
-            App.instance = new App();
-        }
-
-        return App.instance;
     }
 }
 
-App.getInstance();
+const app = new App();

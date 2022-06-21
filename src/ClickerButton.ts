@@ -6,7 +6,7 @@ export class ClickerButton {
     constructor() {
         this.el.innerText = "Click me!";
         this.el.addEventListener('click', () => {
-            // Increment the App's counter variable.
+            // TODO: Increment the App's counter variable.
             // But how do we get a reference to the App?
             // Answer: the Singleton pattern!!
 
