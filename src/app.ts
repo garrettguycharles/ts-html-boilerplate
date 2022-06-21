@@ -1,6 +1,6 @@
 import {random_range} from "./utils/utils";
 import {Tickable} from "./utils/Tickable";
-import {IStringFormatter} from "./StringFormatter/abstract/StringFormatter";
+import {IStringFormatter} from "./StringFormatter/abstract/IStringFormatter";
 import {SpookyStringFormatter} from "./StringFormatter/SpookyStringFormatter";
 import {PlainStringFormatter} from "./StringFormatter/PlainStringFormatter";
 

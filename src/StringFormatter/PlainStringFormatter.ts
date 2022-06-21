@@ -1,4 +1,4 @@
-import {IStringFormatter} from "./abstract/StringFormatter";
+import {IStringFormatter} from "./abstract/IStringFormatter";
 
 export class PlainStringFormatter implements IStringFormatter {
     format(s: string): HTMLElement[] {

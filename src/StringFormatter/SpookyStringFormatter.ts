@@ -1,4 +1,4 @@
-import {IStringFormatter} from "./abstract/StringFormatter";
+import {IStringFormatter} from "./abstract/IStringFormatter";
 import {random_range} from "../utils/utils";
 
 export class SpookyStringFormatter implements IStringFormatter {
