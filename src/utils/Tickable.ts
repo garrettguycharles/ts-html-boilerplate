@@ -13,7 +13,7 @@ export abstract class Tickable {
      * you want to run every tick.
      * @protected
      */
-    protected abstract onTick(): Promise<void>;
+    protected abstract onTick(): Promise<void> | void;
 
     /**
      * Return whether to schedule another tick
