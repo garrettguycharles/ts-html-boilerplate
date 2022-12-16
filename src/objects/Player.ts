@@ -34,8 +34,8 @@ export class Keyboard {
 
 export class Player extends GameObject {
     sprite: GameSprite;
-    speed = Vector2.ZERO();
-    max_speed = 4;
+    velocity = Vector2.ZERO();
+    max_speed = 2;
 
     targ_vect = Vector2.RIGHT().scale(20);
 
@@ -51,34 +51,33 @@ export class Player extends GameObject {
 
     async update(): Promise<void> {
         if (Keyboard.getInstance().check_pressed("ArrowLeft")) {
-            this.speed.x -= 0.5;
+            this.velocity.x -= 1;
         }
         if (Keyboard.getInstance().check_pressed("ArrowUp")) {
-            this.speed.y -= 0.5;
+            this.velocity.y -= 1;
         }
         if (Keyboard.getInstance().check_pressed("ArrowRight")) {
-            this.speed.x += 0.5;
+            this.velocity.x += 1;
         }
         if (Keyboard.getInstance().check_pressed("ArrowDown")) {
-            this.speed.y += 0.5;
+            this.velocity.y += 1;
         }
 
-        this.speed.x = clamp(-this.max_speed, this.speed.x, this.max_speed);
-        this.speed.y = clamp(-this.max_speed, this.speed.y, this.max_speed);
+        if (this.velocity.magnitude() > this.max_speed) {
+            console.log(this.velocity.magnitude());
+            this.velocity = this.velocity.scaleTo(this.max_speed);
+        }
 
-        this.x += this.speed.x;
-        this.y += this.speed.y;
-
-        this.speed.x *= this.friction;
-        this.speed.y *= this.friction;
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
 
         this.sprite.midbottom = this.midbottom;
 
         // update the sprite speed
-        const speed_magnitude = this.speed.magnitude();
+        const speed_magnitude = this.velocity.magnitude();
 
         this.sprite.fps = speed_magnitude * 5;
-        if (this.speed.x < 0) {
+        if (this.velocity.x < 0) {
             this.sprite.scale.x = -1;
         } else {
             this.sprite.scale.x = 1;
@@ -87,6 +86,8 @@ export class Player extends GameObject {
         if (speed_magnitude < 0.01) {
             this.sprite.index = 0;
         }
+
+        this.velocity = this.velocity.scale(this.friction);
 
         this.sprite.angle = speed_magnitude * 4 * this.sprite.scale.x;
 
@@ -109,7 +110,7 @@ export class Player extends GameObject {
             .stroke();
 
         canvas.draw.begin()
-            .lineWidth(1)
+            .lineWidth(10)
             .strokeStyle("black")
             .moveTo(centerOfRoom)
             .lineTo(centerOfRoom.add(this.targ_vect))
@@ -123,17 +124,9 @@ export class Player extends GameObject {
             .stroke();
 
         canvas.draw.text(
-            refVect.radiansTo(Vector2.RIGHT()).toFixed(2),
+            (this.velocity.magnitude() * (1 / this.friction)).toFixed(1),
             this.centerX,
-            this.bottom + 20
+            this.bottom + 10
         );
-
-        canvas.draw.text(
-            refVect.rotate(Vector2.RIGHT().radians()).radians().toFixed(2),
-            this.centerX,
-            this.bottom + 40
-        );
-
-
     }
 }

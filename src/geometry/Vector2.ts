@@ -33,6 +33,10 @@ export class Vector2 {
         return new Vector2(0, 1);
     }
 
+    public static from(v: Vector2): Vector2 {
+        return new Vector2(v.x, v.y);
+    }
+
     add(o: Vector2): Vector2 {
         return new Vector2(this.x + o.x, this.y + o.y);
     }
@@ -43,6 +47,10 @@ export class Vector2 {
 
     scale(scale: number): Vector2 {
         return new Vector2(this.x * scale, this.y * scale);
+    }
+
+    scaleTo(magnitude: number): Vector2 {
+        return Vector2.from(this).scale(magnitude / this.magnitude());
     }
 
     invert(): Vector2 {
