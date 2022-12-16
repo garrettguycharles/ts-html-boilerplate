@@ -2,7 +2,8 @@ import {setImmediate, sleep} from "./utils";
 
 export abstract class Tickable {
     private scheduled_tick: NodeJS.Timeout | undefined;
-    private tick_delay = 0;
+    private tick_frequency = 0;
+    private previous_tick = 0;
 
     constructor() {
         setImmediate(this.scheduleTick.bind(this));
@@ -24,17 +25,19 @@ export abstract class Tickable {
     protected abstract shouldContinueTicking(): boolean;
 
     /**
-     * Set the tick delay. Each tick will wait this long
-     * before continuing.
+     * Set the tick frequency
      *
-     * @param ms
+     * @param hertz
      */
-    setTickDelay(ms: number): void {
-        this.tick_delay = ms;
+    setTickFrequency(hertz: number): void {
+        this.tick_frequency = 1000 / hertz;
     }
 
     async tick() {
-        await sleep(this.tick_delay);
+        const now = Date.now();
+        const timeDelta = now - this.previous_tick;
+        await sleep(Math.max(0, this.tick_frequency - timeDelta));
+        this.previous_tick = now;
 
         try {
             await this.onTick();

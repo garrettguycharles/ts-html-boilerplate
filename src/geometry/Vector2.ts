@@ -10,4 +10,8 @@ export class Vector2 {
     public static ZERO(): Vector2 {
         return new Vector2(0, 0);
     }
+
+    public static ONE(): Vector2 {
+        return new Vector2(1, 1);
+    }
 }

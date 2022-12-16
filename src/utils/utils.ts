@@ -10,6 +10,10 @@ export const sleep = async (ms: number): Promise<void> => {
     return await new Promise(resolve => setTimeout(resolve, ms));
 }
 
+export const degToRad = (degrees: number): number => {
+    return Math.PI * degrees / 180
+}
+
 export function setImmediate(callback: (...any) => any): NodeJS.Timeout {
     return setTimeout(callback, 0);
 }

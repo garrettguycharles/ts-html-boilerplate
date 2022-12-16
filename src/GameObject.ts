@@ -1,6 +1,11 @@
 import {Canvas} from "./Canvas";
+import {Rectangle} from "./geometry/Rectangle";
 
-export class GameObject {
+export class GameObject extends Rectangle {
+    constructor() {
+        super(0, 0, 32, 32);
+    }
+
     public async update(): Promise<void> {
     }
 

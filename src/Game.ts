@@ -9,9 +9,11 @@ export class Game extends Tickable {
     private display: Canvas;
     private room: GameRoom;
     private roomLoader: GameRoomLoader;
+    private previousTick = Date.now();
 
     constructor(display: Canvas) {
         super();
+        this.setTickFrequency(30);
         this.display = display;
         this.initializeDisplay(this.display);
         this.roomLoader = new GameRoomLoader();
@@ -30,6 +32,7 @@ export class Game extends Tickable {
     protected async onTick(): Promise<void> {
         await this.update();
         await this.draw();
+        this.previousTick = Date.now();
     }
 
     protected shouldContinueTicking(): boolean {
@@ -43,7 +46,15 @@ export class Game extends Tickable {
 
     public draw() {
         this.room.draw(this.display);
+        const now = Date.now();
+        const timeDelta = Date.now() - this.previousTick;
+        this.display.context.font = "20px bold serif";
+        this.display.draw.text(`FPS: ${(1000 / timeDelta).toFixed(2)}`, 10, 10);
+        this.previousTick = now;
     }
 
-    protected initializeDisplay(display: Canvas) {}
+    protected initializeDisplay(display: Canvas) {
+        display.width = 512;
+        display.height = 480;
+    }
 }
