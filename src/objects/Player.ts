@@ -37,6 +37,8 @@ export class Player extends GameObject {
     speed = Vector2.ZERO();
     max_speed = 4;
 
+    targ_vect = Vector2.RIGHT().scale(20);
+
     friction = 0.8;
 
     constructor() {
@@ -73,11 +75,9 @@ export class Player extends GameObject {
         this.sprite.midbottom = this.midbottom;
 
         // update the sprite speed
-        const speed_magnitude = Math.sqrt(
-            this.speed.x * this.speed.x + this.speed.y * this.speed.y
-        );
+        const speed_magnitude = this.speed.magnitude();
 
-        this.sprite.fps = speed_magnitude * 4;
+        this.sprite.fps = speed_magnitude * 5;
         if (this.speed.x < 0) {
             this.sprite.scale.x = -1;
         } else {
@@ -94,6 +94,46 @@ export class Player extends GameObject {
     }
 
     draw(canvas: Canvas) {
+        this.targ_vect = this.targ_vect.rotateDegrees(1);
+
         this.sprite.draw(canvas);
+        const centerOfRoom = new Vector2(canvas.width / 2, canvas.height / 2);
+        const refVect = centerOfRoom.to(this.center);
+        const rotatedVect = refVect.rotate(refVect.radiansTo(this.targ_vect));
+
+        canvas.draw.begin()
+            .lineWidth(1)
+            .strokeStyle("blue")
+            .moveTo(centerOfRoom)
+            .lineTo(centerOfRoom.add(refVect))
+            .stroke();
+
+        canvas.draw.begin()
+            .lineWidth(1)
+            .strokeStyle("black")
+            .moveTo(centerOfRoom)
+            .lineTo(centerOfRoom.add(this.targ_vect))
+            .stroke();
+
+        canvas.draw.begin()
+            .lineWidth(1)
+            .strokeStyle("green")
+            .moveTo(centerOfRoom)
+            .lineTo(centerOfRoom.add(rotatedVect))
+            .stroke();
+
+        canvas.draw.text(
+            refVect.radiansTo(Vector2.RIGHT()).toFixed(2),
+            this.centerX,
+            this.bottom + 20
+        );
+
+        canvas.draw.text(
+            refVect.rotate(Vector2.RIGHT().radians()).radians().toFixed(2),
+            this.centerX,
+            this.bottom + 40
+        );
+
+
     }
 }

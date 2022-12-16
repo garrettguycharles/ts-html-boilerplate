@@ -14,6 +14,10 @@ export const degToRad = (degrees: number): number => {
     return Math.PI * degrees / 180
 }
 
+export const radToDeg = (radians: number): number => {
+    return radians * 180 / Math.PI;
+}
+
 export const clamp = (min: number, val: number, max: number): number => {
     return Math.min(Math.max(min, val), max);
 }

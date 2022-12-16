@@ -62,6 +62,36 @@ export class DrawTools {
         this.c.context.fillText(text, x, y);
         return this;
     }
+
+    begin(): DrawTools {
+        this.c.context.beginPath();
+        return this;
+    }
+
+    moveTo(v: Vector2): DrawTools {
+        this.c.context.moveTo(v.x, v.y);
+        return this;
+    }
+
+    lineTo(v: Vector2): DrawTools {
+        this.c.context.lineTo(v.x, v.y);
+        return this;
+    }
+
+    strokeStyle(style: string): DrawTools {
+        this.c.context.strokeStyle = style;
+        return this;
+    }
+
+    lineWidth(width: number): DrawTools {
+        this.c.context.lineWidth = width;
+        return this;
+    }
+
+    stroke(): DrawTools {
+        this.c.context.stroke();
+        return this;
+    }
 }
 
 export class Canvas {
