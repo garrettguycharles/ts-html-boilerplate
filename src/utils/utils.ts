@@ -14,6 +14,10 @@ export const degToRad = (degrees: number): number => {
     return Math.PI * degrees / 180
 }
 
+export const clamp = (min: number, val: number, max: number): number => {
+    return Math.min(Math.max(min, val), max);
+}
+
 export function setImmediate(callback: (...any) => any): NodeJS.Timeout {
     return setTimeout(callback, 0);
 }

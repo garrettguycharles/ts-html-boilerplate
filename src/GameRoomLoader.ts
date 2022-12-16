@@ -1,6 +1,5 @@
 import {GameRoom} from "./GameRoom";
-import {GameSprite} from "./GameSprite";
-import {Vector2} from "./geometry/Vector2";
+import {Player} from "./objects/Player";
 
 /**
  * Use this class to swap the current room.
@@ -9,14 +8,10 @@ import {Vector2} from "./geometry/Vector2";
  */
 export class GameRoomLoader {
     loadInit(): GameRoom {
-        const toReturn = new GameRoom(128, 128);
-        const sprite = new GameSprite(32, 42);
-        sprite.center = new Vector2(100, 100);
-        sprite.loadSpritesheet(
-            "/resources/sprites/mario-walking.png",
-            32, 42, 0, 6 * 11 - 4, 6, 11);
-
-        toReturn.objects.push(sprite);
+        const toReturn = new GameRoom(512, 480);
+        const player = new Player();
+        player.center = toReturn.center;
+        toReturn.objects.push(player);
         return toReturn;
     }
 }

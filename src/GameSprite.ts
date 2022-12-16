@@ -12,8 +12,12 @@ export class GameSprite extends GameObject {
     index: number;
     frameWidth: number;
     frameHeight: number;
-    angle = 180;
+    angle = 0;
     scale = Vector2.ONE();
+    fps = 8;
+
+    previous_update = Date.now();
+    frame_timer = 0;
 
     constructor(width = 32, height = 32) {
         super();
@@ -25,10 +29,22 @@ export class GameSprite extends GameObject {
 
 
     async update(): Promise<void> {
-        this.index += 1;
-        this.angle -= 1;
-        if (this.index >= this.numFrames) {
-            this.index = 0;
+        const now = Date.now();
+        const timeDelta = now - this.previous_update;
+        this.previous_update = now;
+
+        this.frame_timer += timeDelta;
+        const frame_target = 1000 / this.fps;
+
+        if (this.frame_timer > frame_target) {
+            while (this.frame_timer > frame_target) {
+                this.frame_timer -= (1000 / this.fps);
+            }
+            this.index += 1;
+
+            if (this.index >= this.numFrames) {
+                this.index = 0;
+            }
         }
     }
 
@@ -44,10 +60,8 @@ export class GameSprite extends GameObject {
             .translate(this.origin)
             .rotate(this.angle)
             .scale(this.scale.x, this.scale.y)
-            // .mirrorHorz()
             .canvas(this.spritesheet,
                 left, top, this.frameWidth, this.frameHeight,
-                // this.left, this.top, this.right, this.bottom
                 this.x-this.origin.x, this.y-this.origin.y,
                 this.width, this.height
             )

@@ -46,11 +46,6 @@ export class Game extends Tickable {
 
     public draw() {
         this.room.draw(this.display);
-        const now = Date.now();
-        const timeDelta = Date.now() - this.previousTick;
-        this.display.context.font = "20px bold serif";
-        this.display.draw.text(`FPS: ${(1000 / timeDelta).toFixed(2)}`, 10, 10);
-        this.previousTick = now;
     }
 
     protected initializeDisplay(display: Canvas) {
