@@ -2,7 +2,7 @@ import {GameObject} from "../GameObject";
 import {GameSprite} from "../GameSprite";
 import {Canvas} from "../Canvas";
 import {Vector2} from "../geometry/Vector2";
-import {clamp} from "../utils/utils";
+import {clamp, lerp} from "../utils/utils";
 
 export class Keyboard {
     private keys = new Map<string, boolean>();
@@ -41,6 +41,11 @@ export class Player extends GameObject {
 
     friction = 0.8;
 
+    direction = 1;
+    facing = 1;
+
+    scale = Vector2.ONE();
+
     constructor() {
         super();
 
@@ -76,16 +81,17 @@ export class Player extends GameObject {
         // update the sprite speed
         const speed_magnitude = this.velocity.magnitude();
 
-        this.sprite.fps = speed_magnitude * 5;
-        if (this.velocity.x < 0) {
-            this.sprite.scale.x = -1;
-        } else {
-            this.sprite.scale.x = 1;
-        }
+        this.direction = this.velocity.x < 0 ? -1 : 1;
 
+        this.sprite.fps = speed_magnitude * 5;
         if (speed_magnitude < 0.01) {
             this.sprite.index = 0;
         }
+
+        this.sprite.scale = Vector2.from(this.scale);
+        this.sprite.scale.x *= this.facing;
+
+        this.facing = lerp(this.facing, this.direction, 0.3);
 
         this.velocity = this.velocity.scale(this.friction);
 

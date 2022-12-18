@@ -25,3 +25,9 @@ export const clamp = (min: number, val: number, max: number): number => {
 export function setImmediate(callback: (...any) => any): NodeJS.Timeout {
     return setTimeout(callback, 0);
 }
+
+export const lerp = (current: number, target: number, fraction: number): number => {
+    const diff = target - current;
+    const change = diff * fraction;
+    return current + change;
+}
