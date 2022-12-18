@@ -1,6 +1,7 @@
 import {GameObject} from "./GameObject";
 import {Canvas} from "./Canvas";
 import {Vector2} from "./geometry/Vector2";
+import {GameContext} from "./GameContext";
 
 export class GameSprite extends GameObject {
     spritesheet: Canvas;
@@ -28,7 +29,7 @@ export class GameSprite extends GameObject {
     }
 
 
-    async update(): Promise<void> {
+    async update(context: GameContext): Promise<void> {
         const now = Date.now();
         const timeDelta = now - this.previous_update;
         this.previous_update = now;

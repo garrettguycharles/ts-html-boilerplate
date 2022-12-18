@@ -13,6 +13,52 @@ export class Rectangle {
         this.height = height;
     }
 
+    // interactions
+
+    colliderect(o: Rectangle): boolean {
+        return this.colliderect_horz(o) && this.colliderect_vert(o);
+    }
+
+    colliderect_vert(o: Rectangle): boolean {
+        return this.right >= o.left && this.left <= o.right;
+    }
+
+    colliderect_horz(o: Rectangle): boolean {
+        return this.bottom >= o.top && this.top <= o.bottom;
+    }
+
+    collidepoint(v: Vector2): boolean {
+        return this.collidepoint_horz(v) && this.collidepoint_vert(v);
+    }
+
+    collidepoint_vert(v: Vector2): boolean {
+        return v.x >= this.left && v.x <= this.right;
+    }
+
+    collidepoint_horz(v: Vector2): boolean {
+        return v.y >= this.top && v.y <= this.bottom;
+    }
+
+    contains(o: Rectangle): boolean {
+        return this.left <= o.left
+            && this.right >= o.right
+            && this.top <= o.top
+            && this.bottom >= o.bottom;
+    }
+
+    stay_within_boundary(boundary: Rectangle): void {
+        this.left = Math.max(this.left, boundary.left);
+        this.top = Math.max(this.top, boundary.top);
+        this.right = Math.min(this.right, boundary.right);
+        this.bottom = Math.min(this.bottom, boundary.bottom);
+
+        if (!boundary.contains(this)) {
+            this.center = boundary.center;
+        }
+    }
+
+    // getters and setters
+
     get x(): number {
         return this._x;
     }

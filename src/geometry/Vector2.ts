@@ -1,4 +1,4 @@
-import {degToRad, radToDeg} from "../utils/utils";
+import {degToRad, lerp, radToDeg} from "../utils/utils";
 
 export class Vector2 {
     public x: number;
@@ -50,7 +50,7 @@ export class Vector2 {
     }
 
     scaleTo(magnitude: number): Vector2 {
-        return Vector2.from(this).scale(magnitude / this.magnitude());
+        return Vector2.from(this).scale(magnitude / (this.magnitude() + 0.000001));
     }
 
     invert(): Vector2 {
@@ -106,5 +106,9 @@ export class Vector2 {
 
     rotateDegrees(degrees: number): Vector2 {
         return this.rotate(degToRad(degrees));
+    }
+
+    lerpTowards(o: Vector2, fraction: number): Vector2 {
+        return new Vector2(lerp(this.x, o.x, fraction), lerp(this.y, o.y, fraction));
     }
 }

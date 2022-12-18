@@ -2,6 +2,7 @@ import {Tickable} from "./utils/Tickable";
 import {Canvas} from "./Canvas";
 import {GameRoom} from "./GameRoom";
 import {GameRoomLoader} from "./GameRoomLoader";
+import {GameContext} from "./GameContext";
 
 export class Game extends Tickable {
     private running = false;
@@ -30,8 +31,9 @@ export class Game extends Tickable {
     }
 
     protected async onTick(): Promise<void> {
-        await this.update();
-        await this.draw();
+        const tickContext = new GameContext().withGame(this).withRoom(this.room);
+        await this.update(tickContext);
+        await this.draw(tickContext);
         this.previousTick = Date.now();
     }
 
@@ -39,13 +41,13 @@ export class Game extends Tickable {
         return this.running;
     }
 
-    public async update(): Promise<void> {
+    public async update(context: GameContext): Promise<void> {
         console.log("Tick");
-        await this.room.update();
+        await this.room.update(context);
     }
 
-    public draw() {
-        this.room.draw(this.display);
+    public draw(context: GameContext) {
+        this.room.draw(this.display, context);
     }
 
     protected initializeDisplay(display: Canvas) {

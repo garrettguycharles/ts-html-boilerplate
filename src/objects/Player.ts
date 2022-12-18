@@ -2,42 +2,14 @@ import {GameObject} from "../GameObject";
 import {GameSprite} from "../GameSprite";
 import {Canvas} from "../Canvas";
 import {Vector2} from "../geometry/Vector2";
-import {clamp, lerp} from "../utils/utils";
-
-export class Keyboard {
-    private keys = new Map<string, boolean>();
-
-    private constructor() {
-        document.body.addEventListener("keydown", (e) => {
-            this.keys.set(e.key, true);
-        });
-
-        document.body.addEventListener("keyup", (e) => {
-            this.keys.set(e.key, false);
-        });
-    }
-
-    private static instance: Keyboard;
-
-    public static getInstance(): Keyboard {
-        if (!Keyboard.instance) {
-            Keyboard.instance = new Keyboard();
-        }
-
-        return Keyboard.instance;
-    }
-
-    public check_pressed(key: string): boolean {
-        return this.keys.has(key) && this.keys.get(key);
-    }
-}
+import {lerp} from "../utils/utils";
+import {Keyboard} from "../Keyboard";
+import {GameContext} from "../GameContext";
 
 export class Player extends GameObject {
     sprite: GameSprite;
     velocity = Vector2.ZERO();
     max_speed = 2;
-
-    targ_vect = Vector2.RIGHT().scale(20);
 
     friction = 0.8;
 
@@ -47,34 +19,57 @@ export class Player extends GameObject {
     scale = Vector2.ONE();
 
     constructor() {
-        super();
+        super(16, 16);
 
         this.sprite = new GameSprite(32, 48);
         this.sprite.loadSpritesheet("/resources/sprites/mario-walk.png",
             60, 95, 0, 7, 7, 1);
     }
 
-    async update(): Promise<void> {
+    get_movement_vector_from_inputs(): Vector2 {
+        const toReturn = Vector2.ZERO();
+
         if (Keyboard.getInstance().check_pressed("ArrowLeft")) {
-            this.velocity.x -= 1;
+            toReturn.x -= 1;
         }
         if (Keyboard.getInstance().check_pressed("ArrowUp")) {
-            this.velocity.y -= 1;
+            toReturn.y -= 1;
         }
         if (Keyboard.getInstance().check_pressed("ArrowRight")) {
-            this.velocity.x += 1;
+            toReturn.x += 1;
         }
         if (Keyboard.getInstance().check_pressed("ArrowDown")) {
-            this.velocity.y += 1;
+            toReturn.y += 1;
         }
+
+        return toReturn;
+    }
+
+    move(v: Vector2, context: GameContext): void {
+        const otherObjects = context.getRoom().objects;
+
+        const oldCenter = Vector2.from(this.center);
+
+        this.center = this.center.add(v);
+
+        for (const o of otherObjects.filter(_o => _o != this)) {
+            if (this.colliderect(o)) {
+                this.center = oldCenter;
+                return;
+            }
+        }
+    }
+
+    async update(context: GameContext): Promise<void> {
+        const inputs = this.get_movement_vector_from_inputs();
+        this.velocity = this.velocity.add(inputs.scaleTo(0.5));
 
         if (this.velocity.magnitude() > this.max_speed) {
             console.log(this.velocity.magnitude());
             this.velocity = this.velocity.scaleTo(this.max_speed);
         }
 
-        this.x += this.velocity.x;
-        this.y += this.velocity.y;
+        this.move(this.velocity, context);
 
         this.sprite.midbottom = this.midbottom;
 
@@ -97,42 +92,11 @@ export class Player extends GameObject {
 
         this.sprite.angle = speed_magnitude * 4 * this.sprite.scale.x;
 
-        this.sprite.update();
+        this.sprite.update(context);
     }
 
     draw(canvas: Canvas) {
-        this.targ_vect = this.targ_vect.rotateDegrees(1);
-
         this.sprite.draw(canvas);
-        const centerOfRoom = new Vector2(canvas.width / 2, canvas.height / 2);
-        const refVect = centerOfRoom.to(this.center);
-        const rotatedVect = refVect.rotate(refVect.radiansTo(this.targ_vect));
-
-        canvas.draw.begin()
-            .lineWidth(1)
-            .strokeStyle("blue")
-            .moveTo(centerOfRoom)
-            .lineTo(centerOfRoom.add(refVect))
-            .stroke();
-
-        canvas.draw.begin()
-            .lineWidth(10)
-            .strokeStyle("black")
-            .moveTo(centerOfRoom)
-            .lineTo(centerOfRoom.add(this.targ_vect))
-            .stroke();
-
-        canvas.draw.begin()
-            .lineWidth(1)
-            .strokeStyle("green")
-            .moveTo(centerOfRoom)
-            .lineTo(centerOfRoom.add(rotatedVect))
-            .stroke();
-
-        canvas.draw.text(
-            (this.velocity.magnitude() * (1 / this.friction)).toFixed(1),
-            this.centerX,
-            this.bottom + 10
-        );
+        canvas.draw.rectangle(this.left, this.top, this.width, this.height, "red");
     }
 }

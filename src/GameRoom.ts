@@ -2,6 +2,7 @@ import {GameCamera} from "./GameCamera";
 import {GameObject} from "./GameObject";
 import {Canvas} from "./Canvas";
 import {Rectangle} from "./geometry/Rectangle";
+import {GameContext} from "./GameContext";
 
 export class GameRoom extends Rectangle {
     camera: GameCamera;
@@ -16,23 +17,22 @@ export class GameRoom extends Rectangle {
         this.stage.height = this.height;
     }
 
-    public async update(): Promise<void> {
+    public async update(context: GameContext): Promise<void> {
         for (const object of this.objects) {
-            await object.update();
+            await object.update(context);
         }
 
-        await this.camera.update();
+        await this.camera.update(context);
     }
 
-    public draw(display: Canvas): void {
+    public draw(display: Canvas, context: GameContext): void {
         // copy the part of the stage that is visible
         // to the camera onto the provided canvas.
         display.clear("black");
         this.stage.clear("white");
-        this.stage.draw.rectangle(this.centerX, this.centerY, 5, 5, "red");
 
         for (const object of this.objects) {
-            object.draw(this.stage);
+            object.draw(this.stage, context);
         }
 
         display.draw.canvas(this.stage,
