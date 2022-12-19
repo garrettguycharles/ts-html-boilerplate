@@ -1,13 +1,15 @@
 import {Canvas} from "./Canvas";
-import {Rectangle} from "./geometry/Rectangle";
 import {GameSprite} from "./GameSprite";
 import {GameContext} from "./GameContext";
+import {Polygon} from "./geometry/Polygon";
 
-export class GameObject extends Rectangle {
+export class GameObject extends Polygon {
     sprite: GameSprite | null = null;
 
     constructor(width = 32, height = 32) {
-        super(0, 0, width, height);
+        super([]);
+        this.width = width;
+        this.height = height;
     }
 
     public async update(context: GameContext): Promise<void> {

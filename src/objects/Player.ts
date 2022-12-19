@@ -5,6 +5,8 @@ import {Vector2} from "../geometry/Vector2";
 import {lerp} from "../utils/utils";
 import {Keyboard} from "../Keyboard";
 import {GameContext} from "../GameContext";
+import {LineSegment} from "../geometry/LineSegment";
+import {getConfigParseResult} from "ts-loader/dist/config";
 
 export class Player extends GameObject {
     sprite: GameSprite;
@@ -45,7 +47,7 @@ export class Player extends GameObject {
         return toReturn;
     }
 
-    move(v: Vector2, context: GameContext): void {
+    move_(v: Vector2, context: GameContext): void {
         const otherObjects = context.getRoom().objects;
 
         const oldCenter = Vector2.from(this.center);
@@ -60,12 +62,80 @@ export class Player extends GameObject {
         }
     }
 
+    move(velocity: Vector2, context: GameContext): void {
+        if (velocity.magnitude() == 0) {
+            return;
+        }
+
+        const path_lines = this.getVertices().map(vertex => new LineSegment(vertex, vertex.add(velocity)));
+
+        let closest_intersecting_object: GameObject;
+        let closest_intersection_point: Vector2;
+        let closest_intersecting_line: LineSegment;
+        let closest_intersection_movement_vect: Vector2;
+        let shortest_intersection_distance: number = null;
+
+        for (const obj of context.getRoom().objects.filter(o => o !== this)) {
+            for (const path_line of path_lines) {
+                for (const edge of obj.getLines()) {
+                    const intersection = path_line.intersection(edge);
+
+                    if (intersection) {
+                        const movement_to_intersection = path_line.start.to(intersection);
+                        let is_nearest_intersection = false;
+                        if (!closest_intersecting_object) {
+                            is_nearest_intersection = true;
+                        } else {
+                            if (movement_to_intersection.magnitude() < shortest_intersection_distance) {
+                                is_nearest_intersection = true;
+                            }
+                        }
+
+
+                        if (is_nearest_intersection) {
+                            closest_intersecting_object = obj;
+                            closest_intersection_point = intersection;
+                            closest_intersection_movement_vect = movement_to_intersection;
+                            closest_intersecting_line = edge;
+                            shortest_intersection_distance = closest_intersection_movement_vect.magnitude();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!closest_intersecting_object) {
+            this.center = this.center.add(velocity);
+        } else {
+            if (closest_intersection_movement_vect.isParallelWith(closest_intersecting_line.vect)) {
+                this.center = this.center.add(velocity);
+                return;
+            }
+
+            let residual_vect = velocity.projectOnto(closest_intersecting_line.vect)
+                .scaleTo(velocity.magnitude() - shortest_intersection_distance);
+
+            if (residual_vect.isObtuseWith(velocity)) {
+                residual_vect = residual_vect.invert();
+            }
+
+            if (closest_intersecting_line.vect.isPerpendicularTo(velocity)) {
+                residual_vect = Vector2.ZERO();
+            }
+
+            this.center = this.center.add(
+                closest_intersection_movement_vect
+                    .scaleTo(shortest_intersection_distance - 0.5)
+                    .add(residual_vect)
+            );
+        }
+    }
+
     async update(context: GameContext): Promise<void> {
         const inputs = this.get_movement_vector_from_inputs();
         this.velocity = this.velocity.add(inputs.scaleTo(0.5));
 
         if (this.velocity.magnitude() > this.max_speed) {
-            console.log(this.velocity.magnitude());
             this.velocity = this.velocity.scaleTo(this.max_speed);
         }
 

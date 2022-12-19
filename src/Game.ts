@@ -42,7 +42,6 @@ export class Game extends Tickable {
     }
 
     public async update(context: GameContext): Promise<void> {
-        console.log("Tick");
         await this.room.update(context);
     }
 

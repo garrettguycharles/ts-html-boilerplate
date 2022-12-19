@@ -20,5 +20,11 @@ export class Box extends GameObject {
 
     draw(canvas: Canvas, context: GameContext) {
         super.draw(canvas, context);
+
+        canvas.draw.text(
+            this.getVertices().map(v => `(${v.x},${v.y})`).toString(),
+            this.centerX,
+            this.bottom + 20
+        );
     }
 }

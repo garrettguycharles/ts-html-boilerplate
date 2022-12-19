@@ -111,4 +111,53 @@ export class Vector2 {
     lerpTowards(o: Vector2, fraction: number): Vector2 {
         return new Vector2(lerp(this.x, o.x, fraction), lerp(this.y, o.y, fraction));
     }
+
+    perpLeft(): Vector2 {
+        return this.rotateDegrees(-90);
+    }
+
+    perpRight(): Vector2 {
+        return this.rotateDegrees(90);
+    }
+
+    projectOnto(o: Vector2): Vector2 {
+        if (o.magnitude() == 0) {
+            return o;
+        }
+
+        if (this.magnitude() == 0) {
+            return this;
+        }
+
+        return o.scale(
+            this.dot(o) / o.dot(this)
+        );
+    }
+
+    distanceTo(o: Vector2): number {
+        return this.to(o).magnitude();
+    }
+
+    isAcuteWith(o: Vector2): boolean {
+        return this.dot(o) > 0;
+    }
+
+    isObtuseWith(o: Vector2): boolean {
+        return this.dot(o) < 0;
+    }
+
+    isPerpendicularTo(o: Vector2): boolean {
+        return this.dot(o) == 0;
+    }
+
+    isParallelWith(o: Vector2): boolean {
+        const n1 = this.normalize();
+        const n2 = o.normalize();
+
+        return n1.isEqualTo(n2) || n1.isEqualTo(n2.invert());
+    }
+
+    isEqualTo(o: Vector2, precision = 5): boolean {
+        return this.x.toFixed(precision) == o.x.toFixed(precision) && this.y.toFixed(precision) == o.y.toFixed(precision);
+    }
 }
