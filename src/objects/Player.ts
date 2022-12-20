@@ -107,11 +107,6 @@ export class Player extends GameObject {
         if (!closest_intersecting_object) {
             this.center = this.center.add(velocity);
         } else {
-            if (closest_intersection_movement_vect.isParallelWith(closest_intersecting_line.vect)) {
-                this.center = this.center.add(velocity);
-                return;
-            }
-
             let residual_vect = velocity.projectOnto(closest_intersecting_line.vect)
                 .scaleTo(velocity.magnitude() - shortest_intersection_distance);
 
@@ -119,14 +114,14 @@ export class Player extends GameObject {
                 residual_vect = residual_vect.invert();
             }
 
-            if (closest_intersecting_line.vect.isPerpendicularTo(velocity)) {
+            if (Math.abs(closest_intersecting_line.vect.degreesTo(velocity)) - 90 < 15) {
                 residual_vect = Vector2.ZERO();
             }
 
             this.center = this.center.add(
                 closest_intersection_movement_vect
-                    .scaleTo(shortest_intersection_distance - 0.5)
                     .add(residual_vect)
+                    .add(closest_intersecting_line.outward.scaleTo(1))
             );
         }
     }
@@ -167,6 +162,5 @@ export class Player extends GameObject {
 
     draw(canvas: Canvas) {
         this.sprite.draw(canvas);
-        canvas.draw.rectangle(this.left, this.top, this.width, this.height, "red");
     }
 }

@@ -31,6 +31,8 @@ export class GameRoom extends Rectangle {
         display.clear("black");
         this.stage.clear("white");
 
+        this.objects.sort((a, b) => a.z_index < b.z_index ? -1 : 1);
+
         for (const object of this.objects) {
             object.draw(this.stage, context);
         }

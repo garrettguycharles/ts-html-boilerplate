@@ -6,6 +6,10 @@ import {Polygon} from "./geometry/Polygon";
 export class GameObject extends Polygon {
     sprite: GameSprite | null = null;
 
+    get z_index(): number {
+        return this.bottom;
+    }
+
     constructor(width = 32, height = 32) {
         super([]);
         this.width = width;
